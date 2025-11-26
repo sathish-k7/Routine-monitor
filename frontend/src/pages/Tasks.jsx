@@ -847,6 +847,7 @@ const Tasks = () => {
                     primary={
                       <Typography
                         variant="subtitle1"
+                        component="span"
                         sx={{
                           textDecoration: task.completed ? 'line-through' : 'none',
                           fontWeight: task.completed ? 'normal' : 'bold',
@@ -868,6 +869,7 @@ const Tasks = () => {
                               label={getCategoryById(task.category).name}
                               size="small"
                               variant="outlined"
+                              component="span"
                               sx={{
                                 borderColor: getCategoryById(task.category).color,
                                 color: getCategoryById(task.category).color,
