@@ -33,7 +33,7 @@ import {
   Delete,
   Edit,
   TrendingUp,
-  Fire,
+  LocalFireDepartment,
   CalendarToday,
   EmojiEvents,
   Psychology,
@@ -41,7 +41,7 @@ import {
   LocalCafe,
   Book,
   Code,
-  Music,
+  MusicNote,
 } from '@mui/icons-material';
 
 const habitIcons = {
@@ -49,7 +49,7 @@ const habitIcons = {
   'Mindfulness': Psychology,
   'Learning': Book,
   'Productivity': Code,
-  'Creativity': Music,
+  'Creativity': MusicNote,
   'Lifestyle': LocalCafe,
 };
 
@@ -200,18 +200,18 @@ const HabitTracker = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Fire sx={{ mr: 1 }} />
+                <LocalFireDepartment sx={{ mr: 1 }} />
                 <Typography variant="h6">Current Streak</Typography>
               </Box>
               <Typography variant="h3" fontWeight="bold">{stats.currentStreak} days</Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)', color: 'white' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -222,7 +222,7 @@ const HabitTracker = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -233,7 +233,7 @@ const HabitTracker = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ background: 'linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%)', color: 'white' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -253,7 +253,7 @@ const HabitTracker = () => {
           const categoryColor = habitColors[habit.category] || '#6366f1';
           
           return (
-            <Grid item xs={12} md={6} lg={4} key={habit.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={habit.id}>
               <Card sx={{ height: '100%', position: 'relative' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -316,7 +316,7 @@ const HabitTracker = () => {
                         🕐 {habit.time}
                       </Typography>
                       <Chip
-                        icon={<Fire />}
+                        icon={<LocalFireDepartment />}
                         label={`${habit.streak} day streak`}
                         size="small"
                         color="primary"
