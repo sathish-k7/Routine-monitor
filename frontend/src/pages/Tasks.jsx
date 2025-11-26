@@ -847,6 +847,7 @@ const Tasks = () => {
                     primary={
                       <Typography
                         variant="subtitle1"
+                        component="span"
                         sx={{
                           textDecoration: task.completed ? 'line-through' : 'none',
                           fontWeight: task.completed ? 'normal' : 'bold',
