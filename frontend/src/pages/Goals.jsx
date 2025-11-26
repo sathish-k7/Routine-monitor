@@ -30,7 +30,7 @@ import {
 } from '@mui/material';
 import {
   Add,
-  Target,
+  GpsFixed,
   Timeline,
   Flag,
   TrendingUp,
@@ -263,12 +263,12 @@ const Goals = () => {
       {/* Goals Grid */}
       <Grid container spacing={3}>
         {filteredGoals.map((goal) => {
-          const IconComponent = goalIcons[goal.category] || Target;
+          const IconComponent = goalIcons[goal.category] || GpsFixed;
           const categoryColor = goalColors[goal.category] || '#6366f1';
           const daysRemaining = getDaysRemaining(goal.targetDate);
           
           return (
-            <Grid item xs={12} md={6} lg={4} key={goal.id}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={goal.id}>
               <Card sx={{ height: '100%', position: 'relative' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -416,7 +416,7 @@ const Goals = () => {
               sx={{ mb: 2 }}
             />
             <Grid container spacing={2} sx={{ mb: 2 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth>
                   <InputLabel>Category</InputLabel>
                   <Select
@@ -431,7 +431,7 @@ const Goals = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth>
                   <InputLabel>Priority</InputLabel>
                   <Select
@@ -460,7 +460,7 @@ const Goals = () => {
             </Typography>
             {newGoal.milestones.map((milestone, index) => (
               <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Milestone Title"
@@ -472,7 +472,7 @@ const Goals = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
                     label="Target Date"

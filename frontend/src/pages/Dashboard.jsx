@@ -20,7 +20,8 @@ import {
   DialogActions,
   Menu,
   MenuItem,
-  Tooltip
+  Tooltip,
+  Chip
 } from '@mui/material';
 import {
   LocalFireDepartment as FireIcon,
@@ -37,11 +38,13 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Refresh as RefreshIcon
+  Refresh as RefreshIcon,
+  TrendingUp
 } from '@mui/icons-material';
 import { useAppContext } from '../contexts/AppContext';
 import PageLayout from '../components/layout/PageLayout';
 import PageHeader from '../components/common/PageHeader';
+import TaskSearchFilter from '../components/tasks/TaskSearchFilter';
 
 // StatCard component with CRUD operations
 const StatCard = ({ title, value, color, unit, onEdit, onDelete, trend }) => {
@@ -89,7 +92,7 @@ const StatCard = ({ title, value, color, unit, onEdit, onDelete, trend }) => {
                 <Typography variant="body2" sx={{ mr: 1 }}>
                   {trend > 0 ? '+' : ''}{trend}%
                 </Typography>
-                <Icon sx={{ fontSize: 16, color: trend > 0 ? 'success.light' : 'error.light' }} />
+                <TrendingUp sx={{ fontSize: 16, color: trend > 0 ? 'success.light' : 'error.light' }} />
               </Box>
             )}
           </Box>
@@ -167,6 +170,15 @@ const Dashboard = () => {
     status: 'To Monitor',
     priority: 'Medium'
   });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    priority: 'all',
+    category: 'all',
+    labels: [],
+    dateRange: 'all',
+    hasSubtasks: 'all',
+    timeTracked: 'all'
+  });
 
   const stats = {
     calories: { value: '2,450', unit: 'kcal', trend: 12 },
@@ -194,6 +206,37 @@ const Dashboard = () => {
       { name: 'Cool Down', time: '5 min' },
     ],
   };
+
+  // Filter activities based on search query
+  const filteredActivities = activities.filter(activity =>
+    activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    activity.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    activity.time.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter tasks based on search query
+  const filteredTasks = tasks.filter(task =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    task.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    task.priority?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter stats based on search query
+  const filteredStats = Object.entries(stats).filter(([key, stat]) =>
+    key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    stat.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    stat.unit.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filter workout exercises based on search query
+  const filteredExercises = workoutPlan.exercises.filter(exercise =>
+    exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    exercise.time.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate total search results
+  const totalResults = filteredActivities.length + filteredTasks.length + filteredStats.length + filteredExercises.length;
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -308,6 +351,25 @@ const Dashboard = () => {
           </Avatar>
         </Box>
 
+        {/* Global Search Bar */}
+        <Box sx={{ mb: 4 }}>
+          {searchQuery && (
+            <Box sx={{ mb: 2, textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Found {totalResults} results for "{searchQuery}"
+              </Typography>
+            </Box>
+          )}
+          <TaskSearchFilter
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filters={filters}
+            onFiltersChange={setFilters}
+            availableLabels={[]}
+            availableCategories={[]}
+          />
+        </Box>
+
         {/* Header with Add Button */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" fontWeight="bold" sx={{ 
@@ -339,42 +401,60 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Calories" 
-              value={stats.calories.value} 
-              color="#2563eb" 
-              unit={stats.calories.unit}
-              trend={stats.calories.trend}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Steps" 
-              value={stats.steps.value} 
-              color="#3b82f6" 
-              unit={stats.steps.unit}
-              trend={stats.steps.trend}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Heart Rate" 
-              value={stats.heartRate.value} 
-              color="#1d4ed8" 
-              unit={stats.heartRate.unit}
-              trend={stats.heartRate.trend}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Water Intake" 
-              value={stats.water.value} 
-              color="#60a5fa" 
-              unit={stats.water.unit}
-              trend={stats.water.trend}
-            />
-          </Grid>
+          {searchQuery ? (
+            // Show filtered stats when searching
+            filteredStats.map(([key, stat]) => (
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={key}>
+                <StatCard 
+                  title={key.charAt(0).toUpperCase() + key.slice(1)} 
+                  value={stat.value} 
+                  color="#2563eb" 
+                  unit={stat.unit}
+                  trend={stat.trend}
+                />
+              </Grid>
+            ))
+          ) : (
+            // Show all stats when not searching
+            <>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <StatCard 
+                  title="Calories" 
+                  value={stats.calories.value} 
+                  color="#2563eb" 
+                  unit={stats.calories.unit}
+                  trend={stats.calories.trend}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <StatCard 
+                  title="Steps" 
+                  value={stats.steps.value} 
+                  color="#3b82f6" 
+                  unit={stats.steps.unit}
+                  trend={stats.steps.trend}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <StatCard 
+                  title="Heart Rate" 
+                  value={stats.heartRate.value} 
+                  color="#1d4ed8" 
+                  unit={stats.heartRate.unit}
+                  trend={stats.heartRate.trend}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                <StatCard 
+                  title="Water Intake" 
+                  value={stats.water.value} 
+                  color="#60a5fa" 
+                  unit={stats.water.unit}
+                  trend={stats.water.trend}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
 
         {/* Workout Plan */}
@@ -406,18 +486,26 @@ const Dashboard = () => {
           </Box>
           
           <Box sx={{ p: 2 }}>
-            {workoutPlan.exercises.map((exercise, index) => (
+            {(searchQuery ? filteredExercises : workoutPlan.exercises).map((exercise, index) => (
               <Box key={index} sx={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
                 py: 1.5,
-                borderBottom: index !== workoutPlan.exercises.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none'
+                borderBottom: index !== (searchQuery ? filteredExercises : workoutPlan.exercises).length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none'
               }}>
                 <Typography>{exercise.name}</Typography>
                 <Typography variant="body2" color="text.secondary">{exercise.time}</Typography>
               </Box>
             ))}
+            
+            {searchQuery && filteredExercises.length === 0 && (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No exercises found matching "{searchQuery}"
+                </Typography>
+              </Box>
+            )}
             
             {loading ? (
               <Box display="flex" justifyContent="center" p={4}>
@@ -428,18 +516,74 @@ const Dashboard = () => {
                 <Typography variant="h6" fontWeight="bold" gutterBottom>
                   Recent Activities
                 </Typography>
-                {activities.map((activity) => (
-                  <ActivityItem
-                    key={activity.id}
-                    title={activity.title}
-                    time={activity.time}
-                    value={activity.value}
-                    color={activity.color}
-                  />
-                ))}
+                {filteredActivities.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      No activities found matching "{searchQuery}"
+                    </Typography>
+                  </Box>
+                ) : (
+                  filteredActivities.map((activity) => (
+                    <ActivityItem
+                      key={activity.id}
+                      title={activity.title}
+                      time={activity.time}
+                      value={activity.value}
+                      color={activity.color}
+                    />
+                  ))
+                )}
               </Box>
             )}
           </Box>
+        </Card>
+
+        {/* Tasks Section */}
+        <Card sx={{ 
+          mb: 3, 
+          borderRadius: 3,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          border: '1px solid rgba(0,0,0,0.06)'
+        }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Recent Tasks
+            </Typography>
+            {filteredTasks.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body1" color="text.secondary">
+                  {searchQuery ? `No tasks found matching "${searchQuery}"` : 'No tasks available'}
+                </Typography>
+              </Box>
+            ) : (
+              filteredTasks.slice(0, 5).map((task) => (
+                <Box key={task.id} sx={{ 
+                  py: 2, 
+                  borderBottom: '1px solid rgba(0,0,0,0.08)',
+                  '&:last-child': { borderBottom: 'none' }
+                }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {task.title}
+                      </Typography>
+                      {task.description && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          {task.description}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Chip 
+                      label={task.status} 
+                      size="small" 
+                      color={task.status === 'Completed' ? 'success' : 'primary'}
+                      variant="outlined"
+                    />
+                  </Box>
+                </Box>
+              ))
+            )}
+          </CardContent>
         </Card>
       </Box>
     </PageLayout>
